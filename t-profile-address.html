@@ -1,0 +1,142 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../t-address/t-address.html">
+<link rel="import" href="../t-button/t-button.html">
+<link rel="import" href="../t-section-header/t-section-header.html" />
+<link rel="import" href="../t-text-container/travel-element-styles.html" />
+
+<!--
+    <h3>Details:</h3>
+        The `t-profile-address` is a form component for getting the address of a profile or an user.
+        It uses two components primarily, one being `t-address` which is used to get the address an user has inputted
+        through fields viz Address line 1,Address line 2,Country and state dropdown,City,Zip Code.The second being 
+        `t-button` which is used to record/save all the above informations. 
+       
+        It uses following child components in it -
+         <ul>
+          <ol> 1.`t-address`</ol>
+          <ol> 2.`t-button`</ol> 
+         </ul>  
+
+    <h3>Events:</h3>
+        Following events are fired by this component.
+           <p>'collectAddressInfo' - fired when user clicks on save button.</p>
+
+    <h3>Observers:</h3>
+        Following observers are attached to this component.
+        <p>'__populateCountryList' - Observes the prevent Auto populate property of 't-address' if set to true
+        will fire the observer to get all the countries list.
+        </p>
+            
+          
+
+    <h3>Example:</h3>
+
+        <t-profile-address>
+
+        </t-profile-address>
+
+    @demo demo/index.html
+-->
+
+<dom-module id="t-profile-address">
+    <style include="travel-element-styles">
+        t-button {
+            display: block;
+        }
+        t-section-header {
+         display: block;   
+        }
+    </style>
+    
+
+    <template>
+        <!-- content tag to insert header component-->
+        <content select=".t-header"></content>
+        <t-address 
+            id='address'
+            class="margin-bottom-medium"
+            prevent-auto-populate
+            address="{{address}}"      
+            country-api="[[countryApi]]"
+            hide-phone-number
+            query-params="?token=[[authToken]]"
+            base-geo-api="[[baseGeoApi]]">                
+        </t-address>
+
+        <t-button 
+            class="primary row" 
+            label="Save"
+            on-tap="_collectAddressInfo">                            
+        </t-button>
+
+    </template>
+
+    <script>
+
+        (function () {
+
+            'use strict'
+
+            Polymer({
+
+                is: 't-profile-address',
+
+                properties: {
+
+                   /**
+                     * The address Object to return all the address related information inputted by the user.
+                     * @type {Object}
+                     */
+                    address: {
+                        type: Object,
+                        notify: true
+                    },
+                    /**
+                     * The url to hit to get the list of countries.
+                     * Eg.
+                     * http://demo.travelnxt.com/api/Content/countries
+                     * @type {String}
+                     */
+                    countryApi: {
+                        type: String
+                    },
+                    /**
+                     *The url to hit for getting a list of states for the country selected.
+                     * @type {String}
+                     */
+                    baseGeoApi: {
+                        type: String
+                    },
+                    /**
+                     *The auth token required as query params to fetch country list.
+                     * @type {String}
+                     */
+                    authToken: {
+                        type: String
+                    }
+                },
+
+                observers: [
+                    '__populateCountryList(countryApi, authToken)'
+                ],
+
+                __populateCountryList: function (countryApi, authToken) {
+                    if (!countryApi || !authToken) {
+                        return;
+                    }
+                    this.$.address.pullCountryList();
+                },
+
+                _collectAddressInfo: function(){
+                  if(this.$.address.validate()){
+                    this.address = this.$.address.getAddress();
+                  }                
+                }
+
+                
+            });
+            
+        })();
+
+    </script>
+</dom-module>

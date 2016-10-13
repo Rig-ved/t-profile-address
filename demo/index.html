@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+  <head>
+    <title>t-profile-address demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../t-profile-address.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../t-shared-components/theme.html">
+    <link rel="import" href="../../t-header/t-header.html">
+    <link rel="import" href="../../t-mystique-auth/t-mystique-auth.html">
+    <link rel="import" href="../../t-text-container/travel-element-styles.html">
+
+
+    <style is="custom-style" include="travel-element-styles">
+            h1 {
+                margin: 0 auto;
+                font-size: 22px;
+                line-height: var(--t-header-size, 55px);
+                font-weight: 300;
+
+                @apply(--t-header-normal);
+            }
+    </style>
+  </head>
+  <body>
+        <template is="dom-bind" id="templatizer">
+          <t-profile-address 
+            address="{{address}}"            
+            on-address-changed="addressChanged"
+            auth-token="[[response.authenticationToken]]"
+            country-api="[[countryApi]]"
+            base-geo-api="[[baseGeoApi]]">
+             <t-header
+                icon="arrow-back"
+                label="Address"
+                class="t-header">
+                <div>
+                  <h1>Address</h1>
+                </div>                
+            </t-header>
+          </t-profile-address>
+          <t-mystique-auth 
+            name="mystiquedemo"
+            url="http://demo.travelnxt.com/api/Authentication/Authenticate/context"
+            token-response="{{response}}">
+          </t-mystique-auth>
+        </template>
+        <script>
+            (function () {
+
+                'use strict'
+
+                window.addEventListener('WebComponentsReady', function(e) {
+                    var templatizer = document.getElementById('templatizer');
+                    templatizer.baseGeoApi = "http://demo.travelnxt.com/api/content";
+                    templatizer.countryApi = "http://demo.travelnxt.com/api/content/countries";
+
+                    templatizer.addressChanged = function (e) {
+                        console.log(e.detail.value)
+                    };
+                });
+            })();
+        </script>
+  </body>
+</html>
